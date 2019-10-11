@@ -36,5 +36,5 @@ func Resp(w http.ResponseWriter, code int, data interface{}, msg string) {
 	if e != nil {
 		log.Println(e.Error())
 	}
-	w.Write(bytes)
+	_, _ = w.Write(bytes)
 }

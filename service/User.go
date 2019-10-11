@@ -63,6 +63,8 @@ func (service *UserService) Login(mobile, password string) (user model.User, err
 	if tempUser.Passwd != util.Md5encode(password) {
 		return tempUser, errors.New("密码错误")
 	}
+	//todo 更新token 插入数据库
+	//token:=util.Md5encode("")
 
 	return tempUser, nil
 

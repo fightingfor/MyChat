@@ -19,7 +19,7 @@ func init() {
 		log.Fatal(err.Error())
 	}
 	DbEngin.ShowSQL(true)
-	e := DbEngin.Sync(new(model.User))
+	e := DbEngin.Sync(new(model.User), new(model.Contact))
 	if e != nil {
 		log.Println(e.Error())
 	}

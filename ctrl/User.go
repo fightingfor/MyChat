@@ -1,4 +1,4 @@
-package api
+package ctrl
 
 import (
 	"MyChat/model"
