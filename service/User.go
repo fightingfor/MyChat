@@ -69,3 +69,10 @@ func (service *UserService) Login(mobile, password string) (user model.User, err
 	return tempUser, nil
 
 }
+
+func (service *UserService) FindUser(userid int64) (user model.User) {
+
+	temp := model.User{}
+	_, _ = DbEngin.ID(userid).Get(&temp)
+	return temp
+}

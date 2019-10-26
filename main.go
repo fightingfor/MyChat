@@ -15,6 +15,7 @@ func main() {
 	http.HandleFunc("/api/loadfriends", LoadFriends) //加载好友
 	http.HandleFunc("/addr", GetAddr)
 	http.HandleFunc("/getLocation", GetLocation)
+	http.HandleFunc("/api/chat", Chat)
 
 	//http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 	//
