@@ -1,6 +1,8 @@
 package ctrl
 
 import (
+	"MyChat/model"
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"gopkg.in/fatih/set.v0"
@@ -78,7 +80,7 @@ var rwlocker sync.RWMutex
 // ws://127.0.0.1/chat?id=1&token=xxxx
 func Chat(writer http.ResponseWriter,
 	request *http.Request) {
-
+	log.Println("建立连接》》》》》》》》")
 	//todo 检验接入是否合法
 	//checkToken(userId int64,token string)
 	query := request.URL.Query()
@@ -87,13 +89,13 @@ func Chat(writer http.ResponseWriter,
 	token := query.Get("token")
 	userId, _ := strconv.ParseInt(ownerId, 10, 64)
 	targetId, _ := strconv.ParseInt(target, 10, 64)
-	isvalida := checkToken(userId, token)
+	_ = checkToken(userId, token)
 	//如果isvalida=true
 	//isvalida=false
 
 	conn, err := (&websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
-			return isvalida
+			return true
 		},
 	}).Upgrade(writer, request, nil)
 	if err != nil {
@@ -128,6 +130,7 @@ func sendproc(node *Node) {
 	for {
 		select {
 		case data := <-node.DataQueue:
+			fmt.Printf("发送的消息recv<=%s", data)
 			err := node.Conn.WriteMessage(websocket.TextMessage, data)
 			if err != nil {
 				log.Println(err.Error())
@@ -141,13 +144,21 @@ func sendproc(node *Node) {
 func recvproc(targetId int64, node *Node) {
 	for {
 		_, data, err := node.Conn.ReadMessage()
+		log.Println("接收消息》》》》》》》》")
 		if err != nil {
 			log.Println(err.Error())
 			return
 		}
-		sendMsg(targetId, data)
+		var chatmessage model.ChatMessage
+		err = json.Unmarshal(data, &chatmessage)
+		if err != nil {
+			log.Println(err)
+		}
+
+		sendMsg(chatmessage.TargetId, data)
 		//todo 对data进一步处理
-		fmt.Printf("recv<=%s", data)
+		fmt.Printf("接收消息recv<=%s", data)
+		fmt.Println()
 	}
 }
 
@@ -163,6 +174,8 @@ func sendMsg(userId int64, msg []byte) {
 	rwlocker.RUnlock()
 	if ok {
 		node.DataQueue <- msg
+	} else {
+		log.Println("不存在该连接》》》》》》》》")
 	}
 }
 

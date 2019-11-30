@@ -30,6 +30,17 @@ func (service *UserService) Regist(mobile, password, nickname, avatar, sex strin
 		//用户已经注册
 		return tempUser, errors.New("手机号已存在")
 	}
+
+	_, err = DbEngin.Where("nickname=?", mobile).Get(&tempUser)
+	if err != nil {
+		//昵称查询失败
+		log.Println("昵称查询失败", err.Error())
+		return tempUser, err
+	}
+	if tempUser.Id > 0 {
+		return tempUser, errors.New("昵称已存在")
+	}
+
 	tempUser.Mobile = mobile
 	tempUser.Passwd = util.Md5encode(password)
 	tempUser.Nickname = nickname

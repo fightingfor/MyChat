@@ -4,6 +4,7 @@ import (
 	"MyChat/service"
 	"MyChat/util"
 	"net/http"
+	"time"
 )
 
 var contactServer service.ContactServer
@@ -16,14 +17,16 @@ func AddFriend(w http.ResponseWriter, req *http.Request) {
 	_ = req.ParseForm()
 
 	userid := req.PostForm.Get("userid")
-	dstid := req.PostForm.Get("dstid")
+	mobile := req.PostForm.Get("mobile")
 	//todo 添加校验token 逻辑
 	_ = req.PostForm.Get("token")
-	err := contactServer.AddFriends(util.Str2int64(userid), util.Str2int64(dstid))
+	err := contactServer.AddFriends(util.Str2int64(userid), mobile)
 	if err != nil {
 		util.RespFail(w, err.Error())
 	} else {
-		util.RespOk(w, nil, "添加好友成功")
+		strings := make(map[string]int32)
+		strings["server_time"] = int32(time.Now().Unix())
+		util.RespOk(w, strings, "添加好友成功")
 	}
 }
 
